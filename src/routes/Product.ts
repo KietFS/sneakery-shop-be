@@ -3,6 +3,7 @@ import {
   createProduct,
   getProductDetail,
   getProducts,
+  updateSizes,
 } from "../controllers/Product";
 import { validateFieldPayload } from "../middlewares";
 const router = express.Router();
@@ -11,5 +12,6 @@ const router = express.Router();
 router.get("/", getProducts);
 router.post("/", createProduct);
 router.get("/:productId", getProductDetail);
+router.get("/updateSize", updateSizes);
 
 module.exports = router;

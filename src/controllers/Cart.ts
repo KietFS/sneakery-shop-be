@@ -36,7 +36,7 @@ const getCarts = async (
     });
   } catch (error) {
     console.error(error);
-    res
+    return res
       .status(500)
       .json({ code: 500, success: false, totalRecords: 0, results: [] });
   }

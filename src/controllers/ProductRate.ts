@@ -64,8 +64,8 @@ const getOrderByUser = async (
     const findedOrder = await Order.find({
       userId: userInfo?.userId as string,
     }).populate({
-      path: "userId",
-      select: "phoneNumber name address",
+      path: "userId", // Đảm bảo đây là tên trường trong Cart schema bạn muốn populate
+      select: "phoneNumber name address", // Chỉ select trường price từ Product
     });
 
     const totalRecords = await Order.countDocuments();

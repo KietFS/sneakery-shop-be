@@ -1,10 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-
-
-export interface IProductSize{
+export interface IProductSize {
   size: number;
-  quantity: number
+  quantity: number;
 }
 
 // Define Mongoose schema for the Product entity
@@ -17,9 +15,9 @@ export interface IProduct extends Document {
   images?: string[];
   brand?: string;
   sizes?: IProductSize[];
+  buyTime?: number;
   // Add other fields as needed
 }
-
 
 const sizeSchema = new Schema({
   size: { type: Number, required: true, unique: true },
@@ -34,11 +32,9 @@ const productSchema: Schema = new Schema({
   description: { type: String, require: false },
   images: { type: [String], required: false },
   brand: { type: String, require: false },
-  sizes: [sizeSchema], // Sử dụng sizeSchema mới ở đây
+  sizes: { type: [sizeSchema], require: false }, // Use sizeSchema here
+  buyTime: { type: String, require: false },
 });
-
-
-
 
 // Create the Product model
 export const Product = mongoose.model<IProduct>("Product", productSchema);

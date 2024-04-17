@@ -43,7 +43,7 @@ const generateOTP = (): string => {
 
 const decodeBearerToken = async (
   bearerToken: string
-): Promise<{ userId: string | number }> => {
+): Promise<{ userId: string }> => {
   const token = bearerToken?.split(" ")?.[1];
   const decodedInfo = await jsonwebToken.decode(token, { complete: true });
   const userInfo = decodedInfo?.payload as any;
