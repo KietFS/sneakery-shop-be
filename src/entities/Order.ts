@@ -12,10 +12,12 @@ export interface IOrder extends Document {
 
 // Define OrderStatusEnum
 export type OrderStatusEnum =
+  | "new"
   | "received"
   | "processing"
   | "shipping"
-  | "finished";
+  | "finished"
+  | "canceled";
 
 const orderSchema: Schema = new Schema(
   {
@@ -23,7 +25,14 @@ const orderSchema: Schema = new Schema(
     items: [{ type: Schema.Types.ObjectId, ref: "Cart", required: true }],
     status: {
       type: String,
-      enum: ["received", "processing", "shipping", "finished"],
+      enum: [
+        "new",
+        "received",
+        "processing",
+        "shipping",
+        "finished",
+        "canceled",
+      ],
       default: "received",
     },
     totalPrice: { type: Number, required: true },

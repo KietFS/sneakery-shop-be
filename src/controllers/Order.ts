@@ -20,7 +20,7 @@ const createOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
     const newOrder = new Order({
       userId: userInfo?.userId,
       items: [],
-      status: "received",
+      status: "new",
       totalPrice: 0,
     });
 
@@ -52,6 +52,32 @@ const createOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
       code: 500,
     });
   }
+};
+
+//create order (check out functions)
+const cancelOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
+  try {
+    const authorizationHeader = req.headers.authorization;
+    const userInfo = await decodeBearerToken(authorizationHeader);
+    const { orderId } = req.params;
+
+    const findedOrder = await Order.findOne({ _id: orderId });
+
+    if (!!findedOrder) {
+      await findedOrder.update({
+        $set: {
+          status: "canceled",
+        },
+      });
+      return res
+        .status(200)
+        .json({ success: true, message: "Hủy đơn hàng thành công", code: 200 });
+    } else {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order is not existed", code: 404 });
+    }
+  } catch {}
 };
 
 const getOrderByUser = async (
@@ -130,4 +156,4 @@ const getOrderDetail = async (
 //   }
 // };
 
-export { createOrder, getOrderByUser, getOrderDetail };
+export { createOrder, getOrderByUser, getOrderDetail, cancelOrder };

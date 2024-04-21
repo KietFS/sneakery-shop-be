@@ -29,12 +29,14 @@ const main = async () => {
   const cartRoute = require("./routes/Cart");
   const orderRoute = require("./routes/Order");
   const commentRoute = require("./routes/Comment");
+  const favouriteProductRoutes = require("./routes/FavouriteProduct");
 
   app.use("/users", userRoute);
   app.use("/products", productRoute);
   app.use("/carts", cartRoute);
   app.use("/orders", orderRoute);
   app.use("/comments", commentRoute);
+  app.use("/favourite-products", favouriteProductRoutes);
 
   //listen on port
   app.listen(PORT, () => {

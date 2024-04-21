@@ -3,6 +3,7 @@ import {
   createOrder,
   getOrderByUser,
   getOrderDetail,
+  cancelOrder,
 } from "../controllers/Order";
 const router = express.Router();
 
@@ -10,5 +11,6 @@ const router = express.Router();
 router.get("/", getOrderByUser);
 router.post("/", createOrder);
 router.get("/:orderId", getOrderDetail);
+router.put("/cancel/:orderId", cancelOrder);
 
 module.exports = router;

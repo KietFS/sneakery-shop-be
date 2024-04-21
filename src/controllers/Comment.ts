@@ -42,18 +42,18 @@ const createComment = async (
 
     //Just add a new commment to this product's comments
     if (!!findedComment) {
-      await findedComment.update({
-        $set: {
-          comments: [
-            ...findedComment.comments,
-            {
-              user: userInfo?.userId,
-              comment: content,
-            },
-          ],
-        },
-      });
       try {
+        await findedComment.update({
+          $set: {
+            comments: [
+              ...findedComment.comments,
+              {
+                user: userInfo?.userId,
+                comment: content,
+              },
+            ],
+          },
+        });
         return res.status(200).json({
           success: true,
           message: "Comment success",

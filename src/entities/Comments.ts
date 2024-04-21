@@ -11,10 +11,13 @@ export interface ICommentItem {
   comment: string;
 }
 
-const commentItemSchema = new Schema({
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  comment: { type: String, required: false },
-});
+const commentItemSchema = new Schema(
+  {
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    comment: { type: String, required: false },
+  },
+  { timestamps: true }
+);
 
 const commentSchema: Schema = new Schema({
   productId: {
