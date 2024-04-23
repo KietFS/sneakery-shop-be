@@ -1,5 +1,5 @@
 import { decodeBearerToken } from "../utils";
-import { ActionResponse, GetListResponse } from "../types";
+import { ActionResponse, GetListResponse, GetOneResponse } from "../types";
 import { CreateCommentPayload } from "../types/Comment";
 import { FavouriteProduct } from "../entities/FavouriteProduct";
 
@@ -53,29 +53,27 @@ const addToFavouriteProduct = async (
 
 const getFavouriteProduct = async (
   req: CreateCommentPayload,
-  res: GetListResponse<any>
+  res: GetOneResponse<any>
 ) => {
   const authorizationHeader = req.headers.authorization;
   const userInfo = await decodeBearerToken(authorizationHeader);
   const userId = userInfo.userId;
   try {
-    const findedProducts = await FavouriteProduct.find({
+    const findedProducts = await FavouriteProduct.findOne({
       user: userId,
-    }).populate("products", "name category thumbnail price");
-    const totalCountes = await FavouriteProduct.find({
+    }).populate("products", "name category thumbnail price size");
+    const totalCountes = await FavouriteProduct.findOne({
       user: userId,
     }).countDocuments();
     return res.status(200).json({
       success: true,
       results: findedProducts,
-      totalRecords: totalCountes,
       code: 200,
     });
   } catch (error) {
     return res.status(500).json({
       success: true,
       results: [],
-      totalRecords: 0,
       code: 500,
     });
   }
