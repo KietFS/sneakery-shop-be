@@ -21,6 +21,7 @@ const createOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
       userId: userInfo?.userId,
       items: [],
       status: "new",
+      paymentType: "cod",
       totalPrice: 0,
     });
 

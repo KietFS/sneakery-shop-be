@@ -19,6 +19,8 @@ export type OrderStatusEnum =
   | "finished"
   | "canceled";
 
+export type PaymentType = "cod" | "e-wallet";
+
 const orderSchema: Schema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -33,9 +35,15 @@ const orderSchema: Schema = new Schema(
         "finished",
         "canceled",
       ],
-      default: "received",
+      default: "new",
     },
     totalPrice: { type: Number, required: true },
+    paymentType: {
+      type: String,
+      enum: ["cod", "e-wallet"],
+      default: "cod",
+      require: false,
+    },
 
     // Add other fields as needed
   },

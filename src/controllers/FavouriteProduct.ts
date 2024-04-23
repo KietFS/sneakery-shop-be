@@ -1,5 +1,5 @@
 import { decodeBearerToken } from "../utils";
-import { ActionResponse } from "../types";
+import { ActionResponse, GetListResponse } from "../types";
 import { CreateCommentPayload } from "../types/Comment";
 import { FavouriteProduct } from "../entities/FavouriteProduct";
 
@@ -42,6 +42,36 @@ const addToFavouriteProduct = async (
     return res.status(500).json({
       success: true,
       message: "Thêm sản phẩm vào mục yêu thích thật bại",
+      code: 500,
+    });
+  }
+};
+
+const getFavouriteProduct = async (
+  req: CreateCommentPayload,
+  res: GetListResponse<any>
+) => {
+  const authorizationHeader = req.headers.authorization;
+  const userInfo = await decodeBearerToken(authorizationHeader);
+  const userId = userInfo.userId;
+  try {
+    const findedProducts = await FavouriteProduct.find({
+      user: userId,
+    }).populate("products", "name category thumbnail price");
+    const totalCountes = await FavouriteProduct.find({
+      user: userId,
+    }).countDocuments();
+    return res.status(200).json({
+      success: true,
+      results: findedProducts,
+      totalRecords: totalCountes,
+      code: 200,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: true,
+      results: [],
+      totalRecords: 0,
       code: 500,
     });
   }
@@ -96,4 +126,8 @@ const removeFromFavouriteProduct = async (
   }
 };
 
-export { addToFavouriteProduct, removeFromFavouriteProduct };
+export {
+  addToFavouriteProduct,
+  removeFromFavouriteProduct,
+  getFavouriteProduct,
+};

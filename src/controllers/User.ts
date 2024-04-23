@@ -62,6 +62,7 @@ const registerUser = async (req: CreateUserRequest, res: ActionResponse) => {
         password: encryptedPassword,
         address: address || "",
         isVerified: false,
+        rewardPoints: 0,
       });
       await newUser.save();
       const generatedOTP = generateOTP();

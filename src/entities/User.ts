@@ -8,6 +8,7 @@ export interface IUser extends Document {
   password: string;
   address: string;
   isVerified: boolean;
+  rewardPoints?: number;
 
   // Add other fields as needed
 }
@@ -19,6 +20,7 @@ const userSchema: Schema = new Schema({
   phoneNumber: { type: String, require: false, unique: false },
   address: { type: String, require: false, unique: false },
   isVerified: { type: Boolean, require: true, unique: false },
+  rewardPoints: { type: Number, require: false },
   // Define other fields as needed
 });
 
