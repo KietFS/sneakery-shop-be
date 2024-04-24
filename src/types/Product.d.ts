@@ -15,3 +15,11 @@ type CreateProductPayload = express.Request<
     sizes?: IProductSize[];
   }
 >;
+
+type RateProductPayload = express.Request<
+  any,
+  any,
+  {
+    rate: number
+  }
+>;

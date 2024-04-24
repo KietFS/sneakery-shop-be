@@ -1,4 +1,4 @@
-import { ActionResponse, GetListResponse, GetOneResponse } from "../types";
+import { ActionResponse, GetListResponse, GetOneResponse, RateProductPayload } from "../types";
 import { IProduct, Product } from "../entities/Product";
 import express, { IRoute } from "express";
 import { CreateProductPayload } from "../types";
@@ -119,9 +119,6 @@ const updateSizes = async (
   }
 };
 
-const commentOnProduct = async () => {
-  
-}
 
 const getProductDetail = async (
   req: express.Request,
@@ -225,10 +222,27 @@ const commentProduct = async (
   }
 };
 
+const rateProduct = 
+async (
+  req: RateProductPayload,
+  res: ActionResponse
+) => {
+  const {productId} = req.params;
+  const rate = req.body.rate;
+  try {
+    const currentProduct = await Product.findOne({_id: productId});
+    await Product.findOneAndUpdate({_id: productId}, {$set: {rate: Number((((currentProduct?.rate || 0) + rate)/2).toFixed(1)), totalRate: (currentProduct?.totalRate || 0) + 1}})
+    return res.status(200).json({code: 200, success: true, message: "Rate product success"});
+  } catch (error) {
+    return res.status(500).json({code: 500, success: false, message: "Internal Server Error"});
+  }
+}
+
 export {
   getProducts,
   createProduct,
   getProductDetail,
   commentProduct,
   updateSizes,
+  rateProduct, 
 };

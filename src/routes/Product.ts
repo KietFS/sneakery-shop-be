@@ -4,6 +4,7 @@ import {
   getProductDetail,
   getProducts,
   updateSizes,
+  rateProduct,
 } from "../controllers/Product";
 import { validateFieldPayload } from "../middlewares";
 const router = express.Router();
@@ -13,5 +14,6 @@ router.get("/", getProducts);
 router.post("/", createProduct);
 router.get("/:productId", getProductDetail);
 router.get("/updateSize", updateSizes);
+router.post('/rate/:productId', rateProduct)
 
 module.exports = router;

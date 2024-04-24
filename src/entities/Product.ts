@@ -16,7 +16,8 @@ export interface IProduct extends Document {
   brand?: string;
   sizes?: IProductSize[];
   buyTime?: number;
-  // Add other fields as needed
+  rate?: number;
+  totalRate?: number;
 }
 
 const sizeSchema = new Schema({
@@ -33,7 +34,9 @@ const productSchema: Schema = new Schema({
   images: { type: [String], required: false },
   brand: { type: String, require: false },
   sizes: { type: [sizeSchema], require: false }, // Use sizeSchema here
-  buyTime: { type: String, require: false },
+  buyTime: { type: Number, require: false },
+  rate: { type: Number, require: false },
+  totalRate: { type: Number, require: false },
 });
 
 // Create the Product model
