@@ -7,7 +7,7 @@
     "server": "nodemon dist/index.js",
     "start-ts": "ts-node src/index.ts",
     "server-ts": "nodemon --exec ts-node src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json --output public",
     "watch": "tsc -w"
   },
   "author": "Kiet Huynh",

@@ -2,6 +2,8 @@ import { ActionResponse, GetListResponse, GetOneResponse, RateProductPayload } f
 import { IProduct, Product } from "../entities/Product";
 import express, { IRoute } from "express";
 import { CreateProductPayload } from "../types";
+import { decodeBearerToken } from "../utils";
+import { User } from "../entities/User";
 
 //NEED TO UPDATE FILTER FOR SIZE
 const getProducts = async (
@@ -230,8 +232,13 @@ async (
   const {productId} = req.params;
   const rate = req.body.rate;
   try {
+    const authorizationHeader = req.headers.authorization;
+    const userInfo = await decodeBearerToken(authorizationHeader);
     const currentProduct = await Product.findOne({_id: productId});
+    const currentUser = await User.findOne({_id: userInfo.userId});
+
     await Product.findOneAndUpdate({_id: productId}, {$set: {rate: Number((((currentProduct?.rate || 0) + rate)/2).toFixed(1)), totalRate: (currentProduct?.totalRate || 0) + 1}})
+    await User.updateOne({_id: userInfo.userId}, {$set: {rewardPoints: Number(((currentUser.rewardPoints || 0) + currentProduct.price / 20).toFixed(0)) }});
     return res.status(200).json({code: 200, success: true, message: "Rate product success"});
   } catch (error) {
     return res.status(500).json({code: 500, success: false, message: "Internal Server Error"});

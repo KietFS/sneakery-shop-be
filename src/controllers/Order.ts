@@ -8,7 +8,7 @@ import { IOrder, Order } from "../entities/Order";
 import { decodeBearerToken } from "../utils";
 import express from "express";
 import { Cart, ICart } from "../entities/Cart";
-import { IProduct, Product } from "../entities/Product";
+
 
 //create order (check out functions)
 const createOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
@@ -134,27 +134,5 @@ const getOrderDetail = async (
   }
 };
 
-// const updateProductQuantity = async (
-//   req: express.Request,
-//   res: express.Response,
-//   cart: ICart
-// ) => {
-//   const currentCart = (await Cart.findOne({ id: cart?._id })).populate({
-//     path: "productId", // Đảm bảo đây là tên trường trong Cart schema bạn muốn populate
-//     select: "", // Chỉ select trường price từ Product
-//   });
-//   try {
-//     await Product.updateOne(
-//       { _id: cart.id, "sizes.size": currentCart?.size },
-//       { $inc: { "sizes.$.quantity": -cart?.quantity } } // Decrement quantity
-//     );
-//   } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: "Server gặp vấn đề khi cố update lại số lượng size trong kho",
-//       code: 500,
-//     });
-//   }
-// };
 
 export { createOrder, getOrderByUser, getOrderDetail, cancelOrder };
