@@ -134,5 +134,28 @@ const getOrderDetail = async (
   }
 };
 
+const getAllOrder = async (req: express.Request, res: GetListResponse<IOrder>) => {
+  try {
+    const findedOrder = await Order.find().populate({
+      path: "userId",
+      select: "phoneNumber name address",
+    });
+    const totalRecords = await Order.countDocuments();
+    return res?.status(200).json({
+      code: 200,
+      results: findedOrder,
+      totalRecords: totalRecords,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      results: [],
+      totalRecords: 0,
+      code: 500,
+    });
+  }
+}
 
-export { createOrder, getOrderByUser, getOrderDetail, cancelOrder };
+
+export { createOrder, getOrderByUser, getOrderDetail, cancelOrder, getAllOrder };

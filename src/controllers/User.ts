@@ -7,7 +7,7 @@ import {
 import { IUser, User } from "../entities/User";
 import express from "express";
 import argon2 from "argon2";
-import { generateOTP, sendOTPThroughMail } from "../utils";
+import { decodeBearerToken, generateOTP, sendOTPThroughMail } from "../utils";
 import { OTP } from "../entities/OTP";
 import { ActionResponse, GetListResponse } from "../types/Response";
 import jsonwebToken, { JsonWebTokenError } from "jsonwebtoken";
@@ -15,9 +15,8 @@ import jsonwebToken, { JsonWebTokenError } from "jsonwebtoken";
 const getUsers = async (req: express.Request, res: GetListResponse<IUser>) => {
   try {
     const users = await User.find();
-    const { params } = req;
     const totalRecords = await User.countDocuments();
-    res.status(200).json({
+    return res.status(200).json({
       results: users,
       totalRecords: totalRecords,
       success: true,
@@ -25,7 +24,7 @@ const getUsers = async (req: express.Request, res: GetListResponse<IUser>) => {
     });
   } catch (error) {
     console.error(error);
-    res
+    return res
       .status(500)
       .json({ success: false, totalRecords: 0, results: [], code: 500 });
   }
@@ -112,6 +111,7 @@ const loginUser = async (req: LoginUserRequest, res: ActionResponse) => {
           {
             userId: existedUser._id,
             email: existedUser.email,
+            role: existedUser.role,
           },
           `${process.env.ACCESS_TOKEN_SECRET}`,
           { expiresIn: "7d" } // Set the expiration time as needed
@@ -244,4 +244,68 @@ const editUser = async (req: EditUserRequest, res: ActionResponse) => {
   }
 };
 
-export { getUsers, registerUser, loginUser, verifyUserOTP, editUser };
+const loginAdmin = async (req: LoginUserRequest, res: ActionResponse) => {
+  try {
+    const { email, password } = req.body;
+    const existedUser = await User.findOne({
+      email: email,
+    });
+
+    if (!!existedUser && existedUser?.role === "admin") {
+      const isValidPassword = await argon2.verify(
+        existedUser.password,
+        password
+      );
+      if (isValidPassword) {
+        const accessToken = jsonwebToken.sign(
+          {
+            userId: existedUser._id,
+            email: existedUser.email,
+            role: existedUser.role,
+          },
+          `${process.env.ACCESS_TOKEN_SECRET}`,
+          { expiresIn: "7d" } // Set the expiration time as needed
+        );
+
+        return res.status(200).json({
+          code: 200,
+          success: true,
+          message: {
+            text: "Login successfully",
+            info: {
+              user: {
+                username: existedUser?.username,
+                email: existedUser?.email,
+                phoneNumber: existedUser?.phoneNumber,
+              },
+              accessToken: accessToken,
+            },
+          },
+        });
+      } else {
+        return res?.status(400).json({
+          code: 400,
+          success: false,
+          message: "Email or password is incorrect",
+        });
+      }
+    } else {
+      return res?.status(400).json({
+        code: 400,
+        success: false,
+        message: "Email or password is incorrect or you are not admin",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, code: 500, message: "Internal Server Error" });
+  }
+};
+
+
+
+
+
+export { getUsers, registerUser, loginUser, verifyUserOTP, editUser , loginAdmin };

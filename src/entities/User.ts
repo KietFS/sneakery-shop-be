@@ -1,5 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+
+export type UserRole =
+  | "admin"
+  | "shopper"
+
 // Define Mongoose schema for the User entity
 export interface IUser extends Document {
   username: string;
@@ -9,6 +14,7 @@ export interface IUser extends Document {
   address: string;
   isVerified: boolean;
   rewardPoints?: number;
+  role?: UserRole
 
   // Add other fields as needed
 }
@@ -21,6 +27,7 @@ const userSchema: Schema = new Schema({
   address: { type: String, require: false, unique: false },
   isVerified: { type: Boolean, require: true, unique: false },
   rewardPoints: { type: Number, require: false },
+  role: { type: String, require: false, enum: ["admin", "shopper"], default: "shopper" },
   // Define other fields as needed
 });
 

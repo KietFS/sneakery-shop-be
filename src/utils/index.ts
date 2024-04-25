@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import jsonwebToken from "jsonwebtoken";
+import { UserRole } from "../entities/User";
 
 const sendOTPThroughMail = (to, subject, text) => {
   // Thông tin tài khoản email gửi
@@ -43,7 +44,7 @@ const generateOTP = (): string => {
 
 const decodeBearerToken = async (
   bearerToken: string
-): Promise<{ userId: string }> => {
+): Promise<{ userId: string, role: UserRole  }> => {
   const token = bearerToken?.split(" ")?.[1];
   const decodedInfo = await jsonwebToken.decode(token, { complete: true });
   const userInfo = decodedInfo?.payload as any;

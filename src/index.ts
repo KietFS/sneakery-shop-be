@@ -25,12 +25,14 @@ const main = async () => {
 
   //list of routes
   const userRoute = require("./routes/User");
+  const adminRoute = require("./routes/Admin");
   const productRoute = require("./routes/Product");
   const cartRoute = require("./routes/Cart");
   const orderRoute = require("./routes/Order");
   const commentRoute = require("./routes/Comment");
   const favouriteProductRoutes = require("./routes/FavouriteProduct");
 
+  app.use("/admin", adminRoute);
   app.use("/users", userRoute);
   app.use("/products", productRoute);
   app.use("/carts", cartRoute);

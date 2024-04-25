@@ -36,4 +36,20 @@ const validateFieldPayload = <T = any>(
   next();
 };
 
-export { validateFieldPayload };
+const validateIsAdmin = <T = any>(
+  req: express.Request<{}, {}, any>,
+  res: ActionResponse,
+  next: NextFunction
+) => {
+  const authorizationHeader = req.headers.authorization;
+  if (!authorizationHeader) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+      code: 401,
+    });
+  }
+  next();
+};
+
+export { validateFieldPayload, validateIsAdmin };

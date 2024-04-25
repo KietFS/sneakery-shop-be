@@ -14,6 +14,7 @@ type GetListResponse<T> = express.Response<{
   results: Array<T> | [];
   totalRecords: number;
   success: boolean;
+  message?: string
 }>;
 
 type GetOneResponse<T> = express.Response<{

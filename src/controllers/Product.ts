@@ -245,6 +245,26 @@ async (
   }
 }
 
+const removeProduct = async (req: express.Request, res: ActionResponse) => {
+  const authorizationHeader = req?.headers?.authorization;
+  const userInfo = await decodeBearerToken(authorizationHeader);
+  if (userInfo?.role !== "admin") {
+    return res.status(403).json({ code: 403, success: false, message: "Permission Denied" });
+  } else {  try {
+    const { productId } = req.params;
+    await Product.deleteOne({ _id: productId });
+    return res.status(200).json({ code: 200, success: true, message: "Delete product success" });
+} catch (error) {
+    console.error(error);
+    return res.status(500).json({ code: 500, success: false, message: "Internal Server Error" });
+  }}
+
+};
+
+const removeManyProducts = async (req: express.Request, res: ActionResponse) => {
+  const {productIds} = req.body as any
+}
+
 export {
   getProducts,
   createProduct,
@@ -252,4 +272,5 @@ export {
   commentProduct,
   updateSizes,
   rateProduct, 
+  removeProduct
 };
