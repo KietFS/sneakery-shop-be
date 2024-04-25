@@ -2,6 +2,7 @@ require("dotenv").config();
 import "reflect-metadata";
 import express, { text } from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 
 const main = async () => {
   const app = express();
@@ -21,6 +22,7 @@ const main = async () => {
 
   //PORT
   const PORT = process.env.PORT || 4000;
+  app.use(cors())
   app.use(express.json());
 
   //list of routes
