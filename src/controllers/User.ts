@@ -244,6 +244,7 @@ const editUser = async (req: EditUserRequest, res: ActionResponse) => {
   }
 };
 
+//login admin functions
 const loginAdmin = async (req: LoginUserRequest, res: ActionResponse) => {
   try {
     const { email, password } = req.body;

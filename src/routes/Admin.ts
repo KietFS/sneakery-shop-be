@@ -3,7 +3,7 @@ import {
   getUsers,
   loginAdmin,
 } from "../controllers/User";
-import { getAllOrder } from "../controllers/Order";
+import { changeStatusOrder, getAllOrder } from "../controllers/Order";
 import { getProducts } from "../controllers/Product";
 import { validateIsAdmin } from "../middlewares";
 const router = express.Router();
@@ -13,5 +13,6 @@ router.post("/login", loginAdmin);
 router.get('/orders',validateIsAdmin, getAllOrder)
 router.get('/users',validateIsAdmin , getUsers)
 router.get('/products', getProducts)
+router.put('/orders/:orderId',validateIsAdmin, changeStatusOrder)
 
 module.exports = router;
