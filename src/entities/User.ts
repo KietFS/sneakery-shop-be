@@ -15,6 +15,7 @@ export interface IUser extends Document {
   isVerified: boolean;
   rewardPoints?: number;
   role?: UserRole
+  isActive?: boolean
 
   // Add other fields as needed
 }
@@ -28,7 +29,8 @@ const userSchema: Schema = new Schema({
   isVerified: { type: Boolean, require: true, unique: false },
   rewardPoints: { type: Number, require: false },
   role: { type: String, require: false, enum: ["admin", "shopper"], default: "shopper" },
-  // Define other fields as needed
+  isActive: { type: Boolean, require: false, default: true},
+  // Define other fields as needed, such as role, isActive, etc.
 });
 
 // Create the User model

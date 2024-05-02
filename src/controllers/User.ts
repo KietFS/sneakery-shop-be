@@ -106,6 +106,13 @@ const loginUser = async (req: LoginUserRequest, res: ActionResponse) => {
         existedUser.password,
         password
       );
+      if (existedUser.isActive == false){
+        return res?.status(400).json({
+          code: 400,
+          success: false,
+          message: "Your account is deactivated, please contact admin for more information",
+        });
+      }
       if (isValidPassword) {
         const accessToken = jsonwebToken.sign(
           {
@@ -305,8 +312,62 @@ const loginAdmin = async (req: LoginUserRequest, res: ActionResponse) => {
   }
 };
 
+const activateUser = async (req: express.Request, res: ActionResponse) => {
+  try {
+    const { userId } = req.params;
+    const findedUser = await User.updateOne({ _id: userId }, { $set: { isActive: true }});;
+
+    if (findedUser.ok) {
+      return res.status(200).json({
+        code: 200,
+        success: true,
+        message: "Kich hoạt tài khoản thành công",
+      });
+    } else {
+      return res.status(404).json({
+        code: 404,
+        success: false,
+        message: "Không tìm thấy người dùng",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      code: 500,
+    });
+  }
+}
+
+const deActivateUser = async (req: express.Request, res: ActionResponse) => {
+  try {
+    const { userId } = req.params;
+    const findedUser = await User.updateOne({ _id: userId }, { $set: { isActive: false }});;
+
+    if (findedUser.ok) {
+      return res.status(200).json({
+        code: 200,
+        success: true,
+        message: "Vô hiệu hóa tài khoản thành công",
+      });
+    } else {
+      return res.status(404).json({
+        code: 404,
+        success: false,
+        message: "Không tìm thấy người dùng",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      code: 500,
+    });
+  }
+
+}
 
 
 
 
-export { getUsers, registerUser, loginUser, verifyUserOTP, editUser , loginAdmin };
+export { getUsers, registerUser, loginUser, verifyUserOTP, editUser , loginAdmin, activateUser, deActivateUser };
