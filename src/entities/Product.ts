@@ -18,6 +18,7 @@ export interface IProduct extends Document {
   buyTime?: number;
   rate?: number;
   totalRate?: number;
+  totalComment?: number;
 }
 
 const sizeSchema = new Schema({
@@ -37,6 +38,7 @@ const productSchema: Schema = new Schema({
   buyTime: { type: Number, require: false },
   rate: { type: Number, require: false },
   totalRate: { type: Number, require: false },
+  totalComment: { type: Number, require: false },
 });
 
 // Create the Product model

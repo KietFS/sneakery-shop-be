@@ -4,6 +4,7 @@ import { Comment, IComment } from "../entities/Comments";
 import jsonwebToken from "jsonwebtoken";
 import { decodeBearerToken } from "../utils";
 import { CreateCommentPayload } from "../types/Comment";
+import { Product } from "../entities/Product";
 
 const getComments = async (req: express.Request, res: express.Response) => {
   try {
@@ -39,6 +40,7 @@ const createComment = async (
 
     //Find current comments for this product
     const findedComment = await Comment.findOne({ productId: productId });
+    const findedProduct = await Product.findOne({ _id: productId });
 
     //Just add a new commment to this product's comments
     if (!!findedComment) {
@@ -54,6 +56,7 @@ const createComment = async (
             ],
           },
         });
+        await findedProduct.update({$set: {totalComments: (findedProduct.totalComment) || 0 + 1}})
         return res.status(200).json({
           success: true,
           message: "Comment success",
@@ -80,6 +83,7 @@ const createComment = async (
           ],
         });
         await newComment.save();
+        await findedProduct.update({$set: {totalComments: 1}})
         return res.status(200).json({
           success: true,
           message: "Comment success",
