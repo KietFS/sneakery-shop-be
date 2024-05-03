@@ -5,7 +5,7 @@ import {
   activateUser,
   deActivateUser
 } from "../controllers/User";
-import { changeStatusOrder, getAllOrder } from "../controllers/Order";
+import { changeStatusOrder, deleteOrder, getAllOrder } from "../controllers/Order";
 import { getProducts } from "../controllers/Product";
 import { validateIsAdmin } from "../middlewares";
 const router = express.Router();
@@ -19,5 +19,7 @@ router.put('/users/deactivate/:userId',validateIsAdmin , deActivateUser)
 router.get('/products', getProducts)
 router.delete('/products/:productId', validateIsAdmin, getProducts)
 router.put('/orders/:orderId',validateIsAdmin, changeStatusOrder)
+router.delete('/orders/:orderId',validateIsAdmin, deleteOrder)
+
 
 module.exports = router;

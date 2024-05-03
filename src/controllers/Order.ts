@@ -201,6 +201,32 @@ const changeStatusOrder = async (
   }
 };
 
+const deleteOrder = async (  req: express.Request, res: ActionResponse) => {
+  const { orderId } = req.params;
+  try {
+    const findedOrder = await Order.findOneAndDelete({_id: orderId});
+    if (!!findedOrder) {
+      return res.status(200).json({
+        code: 200,
+        success: true,
+        message: "Xóa đơn hàng thành công",
+      });
+    } else {
+      return res.status(404).json({
+        code: 404,
+        success: false,
+        message: "Không tìm thấy đơn hàng",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: "Xóa đơn hàng thất bại",
+    });
+  }
+}
+
 export {
   createOrder,
   getOrderByUser,
@@ -208,4 +234,5 @@ export {
   cancelOrder,
   getAllOrder,
   changeStatusOrder,
+  deleteOrder,
 };
