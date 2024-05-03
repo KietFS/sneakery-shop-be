@@ -11,7 +11,6 @@ import express from "express";
 import { Cart, ICart } from "../entities/Cart";
 import { User } from "../entities/User";
 
-
 //create order (check out functions)
 const createOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
   try {
@@ -20,16 +19,19 @@ const createOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
 
     const { cartId, address, useRewardPoints } = req.body;
 
-    if (useRewardPoints > 0){
-      await User.findOneAndUpdate({ _id: userInfo?.userId }, { $inc: { rewardPoints: 0 - useRewardPoints } });
-    } 
+    if (useRewardPoints > 0) {
+      await User.findOneAndUpdate(
+        { _id: userInfo?.userId },
+        { $inc: { rewardPoints: 0 - useRewardPoints } }
+      );
+    }
 
     const newOrder = new Order({
       userId: userInfo?.userId,
       items: [],
       status: "new",
       paymentType: "cod",
-      totalPrice: 0 -  (useRewardPoints || 0),
+      totalPrice: 0 - (useRewardPoints || 0),
     });
 
     //SAVE ORDER
@@ -99,7 +101,7 @@ const getOrderByUser = async (
       userId: userInfo?.userId as string,
     }).populate({
       path: "userId",
-      select: "phoneNumber name address",
+      select: "phoneNumber username address",
     });
 
     const totalRecords = await Order.countDocuments();
@@ -129,7 +131,7 @@ const getOrderDetail = async (
       _id: orderId,
     }).populate({
       path: "userId", // Đảm bảo đây là tên trường trong Cart schema bạn muốn populate
-      select: "phoneNumber name address", // Chỉ select trường price từ Product
+      select: "phoneNumber username address", // Chỉ select trường price từ Product
     });
     if (findedOrder) {
       return res
@@ -141,11 +143,14 @@ const getOrderDetail = async (
   }
 };
 
-const getAllOrder = async (req: express.Request, res: GetListResponse<IOrder>) => {
+const getAllOrder = async (
+  req: express.Request,
+  res: GetListResponse<IOrder>
+) => {
   try {
     const findedOrder = await Order.find().populate({
       path: "userId",
-      select: "phoneNumber name address",
+      select: "phoneNumber username address",
     });
     const totalRecords = await Order.countDocuments();
     return res?.status(200).json({
@@ -162,34 +167,45 @@ const getAllOrder = async (req: express.Request, res: GetListResponse<IOrder>) =
       code: 500,
     });
   }
-}
+};
 
-const changeStatusOrder = async (req: UpdateStatusOrderPayload, res: ActionResponse) => {
-  const {orderId} = req.params
+const changeStatusOrder = async (
+  req: UpdateStatusOrderPayload,
+  res: ActionResponse
+) => {
+  const { orderId } = req.params;
   try {
-    const findedOrder = await Order.findOneAndUpdate({_id: orderId}, {$set: {status: req.body.status}});
+    const findedOrder = await Order.findOneAndUpdate(
+      { _id: orderId },
+      { $set: { status: req.body.status } }
+    );
     if (!!findedOrder) {
       return res?.status(200).json({
         code: 200,
         success: true,
-        message: 'Cập nhật trạng thái đơn hàng thành công'
+        message: "Cập nhật trạng thái đơn hàng thành công",
       });
     } else {
       return res?.status(404).json({
         code: 404,
         success: false,
-        message: 'Không tìm thấy đơn hàng'
+        message: "Không tìm thấy đơn hàng",
       });
     }
   } catch (error) {
     return res?.status(200).json({
       code: 200,
       success: true,
-      message: 'Cập nhật đơn hàng thất bại, lỗi từ server'
+      message: "Cập nhật đơn hàng thất bại, lỗi từ server",
     });
   }
-}
+};
 
-
-
-export { createOrder, getOrderByUser, getOrderDetail, cancelOrder, getAllOrder, changeStatusOrder  };
+export {
+  createOrder,
+  getOrderByUser,
+  getOrderDetail,
+  cancelOrder,
+  getAllOrder,
+  changeStatusOrder,
+};
