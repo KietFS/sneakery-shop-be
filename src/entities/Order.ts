@@ -8,6 +8,7 @@ export interface IOrder extends Document {
   items: Types.Array<ICart["_id"]>;
   status: OrderStatusEnum;
   totalPrice: number;
+  rate?: number;
 }
 
 // Define OrderStatusEnum
@@ -42,6 +43,11 @@ const orderSchema: Schema = new Schema(
       type: String,
       enum: ["cod", "e-wallet"],
       default: "cod",
+      require: false,
+    },
+    rate: {
+      type: Number,
+      default: 0,
       require: false,
     },
 

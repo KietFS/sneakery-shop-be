@@ -3,10 +3,11 @@ import {
   CreateOrderPayload,
   GetListResponse,
   GetOneResponse,
+  RateOrderPayload,
   UpdateStatusOrderPayload,
 } from "../types";
 import { IOrder, Order } from "../entities/Order";
-import { decodeBearerToken } from "../utils";
+import { decodeBearerToken, sendNoti } from "../utils";
 import express from "express";
 import { Cart, ICart } from "../entities/Cart";
 import { User } from "../entities/User";
@@ -17,12 +18,12 @@ const createOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
     const authorizationHeader = req.headers.authorization;
     const userInfo = await decodeBearerToken(authorizationHeader);
 
-    const { cartId, address, useRewardPoints } = req.body;
+    const { cartId, address, rewardPoints } = req.body;
 
-    if (useRewardPoints > 0) {
+    if (rewardPoints > 0) {
       await User.findOneAndUpdate(
         { _id: userInfo?.userId },
-        { $inc: { rewardPoints: 0 - useRewardPoints } }
+        { $inc: { rewardPoints: 0 - rewardPoints } }
       );
     }
 
@@ -31,14 +32,14 @@ const createOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
       items: [],
       status: "new",
       paymentType: "cod",
-      totalPrice: 0 - (useRewardPoints || 0),
+      totalPrice: 0 - (rewardPoints || 0),
     });
 
     //SAVE ORDER
     for (const cartItemData of cartId) {
       const cartItem: ICart = await Cart.findById(cartItemData);
 
-      if (cartItem) {
+      if (cartItem?.isVisible) {
         newOrder.items.push(cartItem._id);
         newOrder.totalPrice += cartItem?.price;
       }
@@ -50,7 +51,11 @@ const createOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
     }
     for (const cartItemId of cartId) {
       // await updateProductQuantity(req, res);
-      await Cart.findByIdAndRemove(cartItemId);
+      await Cart.findByIdAndUpdate(cartItemId, {
+        $set: {
+          isVisible: false,
+        },
+      });
     }
     return res
       .status(200)
@@ -152,6 +157,7 @@ const getAllOrder = async (
       path: "userId",
       select: "phoneNumber username address",
     });
+
     const totalRecords = await Order.countDocuments();
     return res?.status(200).json({
       code: 200,
@@ -174,12 +180,46 @@ const changeStatusOrder = async (
   res: ActionResponse
 ) => {
   const { orderId } = req.params;
+
   try {
     const findedOrder = await Order.findOneAndUpdate(
       { _id: orderId },
       { $set: { status: req.body.status } }
-    );
+    ).populate({
+      path: "userId",
+      select: "deviceId",
+    });
+
+    const temp = await Order.findOne({ _id: orderId }).populate({
+      path: "userId",
+      select: "deviceId",
+    });
+
+    const title = {
+      new: "Đơn hàng của bạn đã được tạo mới.",
+      received: "Chúng tôi đã nhận được đơn hàng của bạn",
+      processing: "Chúng tôi đang xử lý đơn hàng của bạn",
+      shipping: "Chúng tôi đang giao đơn hàng của bạn",
+      finished: "Đơn hàng đã được giao đến tay bạn !",
+      canceled: "Đơn hàng của bạn đã bị hủy",
+    };
+
+    const descriptions = {
+      new: "Hãy vui lòng đợi chúng tôi xử lý đơn hàng của bạn",
+      received: "Hãy vui lòng đợi chúng tôi xử lý đơn hàng của bạn",
+      processing: "Hãy vui lòng đợi chúng tôi xử lý đơn hàng của bạn",
+      shipping: "Hãy vui lòng đợi chúng tôi xử lý đơn hàng của bạn",
+      finished: "Hãy vui lòng đợi chúng tôi xử lý đơn hàng của bạn",
+      canceled:
+        "Đơn hàng này đã bị hủy, vui lòng quay trở lại để tiếp tục mua sắm",
+    };
+
     if (!!findedOrder) {
+      await sendNoti((temp.userId as any)?.deviceId, {
+        body: `${descriptions[req.body.status]} - Mã đơn hàng ${findedOrder?._id}`,
+        title: `${title[req.body.status]}`,
+        subtitle: ``,
+      });
       return res?.status(200).json({
         code: 200,
         success: true,
@@ -201,10 +241,10 @@ const changeStatusOrder = async (
   }
 };
 
-const deleteOrder = async (  req: express.Request, res: ActionResponse) => {
+const deleteOrder = async (req: express.Request, res: ActionResponse) => {
   const { orderId } = req.params;
   try {
-    const findedOrder = await Order.findOneAndDelete({_id: orderId});
+    const findedOrder = await Order.findOneAndDelete({ _id: orderId });
     if (!!findedOrder) {
       return res.status(200).json({
         code: 200,
@@ -225,7 +265,50 @@ const deleteOrder = async (  req: express.Request, res: ActionResponse) => {
       message: "Xóa đơn hàng thất bại",
     });
   }
-}
+};
+
+const rateOrder = async (req: RateOrderPayload, res: ActionResponse) => {
+  const { orderId } = req.params;
+  const rate = req.body.rate;
+  try {
+    const authorizationHeader = req.headers.authorization;
+    const userInfo = await decodeBearerToken(authorizationHeader);
+    const currentOrder = await Order.findOne({ _id: orderId });
+    const currentUser = await User.findOne({ _id: userInfo.userId });
+
+    await Order.findOneAndUpdate(
+      { _id: orderId },
+      {
+        $set: {
+          rate: Number(rate),
+        },
+      }
+    );
+    await User.updateOne(
+      { _id: userInfo.userId },
+      {
+        $set: {
+          rewardPoints: Number(
+            (
+              (currentUser.rewardPoints || 0) +
+              currentOrder.totalPrice / 20
+            ).toFixed(0)
+          ),
+        },
+      }
+    );
+    return res.status(200).json({
+      code: 200,
+      success: true,
+      message: "Đánh giá đơn hàng thành công",
+    });
+  } catch (error) {
+    console.log("RATE ORDER EROR", error);
+    return res
+      .status(500)
+      .json({ code: 500, success: false, message: "Internal Server Error" });
+  }
+};
 
 export {
   createOrder,
@@ -235,4 +318,5 @@ export {
   getAllOrder,
   changeStatusOrder,
   deleteOrder,
+  rateOrder,
 };

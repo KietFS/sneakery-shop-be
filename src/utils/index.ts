@@ -1,6 +1,8 @@
 import nodemailer from "nodemailer";
 import jsonwebToken from "jsonwebtoken";
 import { UserRole } from "../entities/User";
+import { NotiBody } from "../types/Notification";
+import axios from "axios";
 
 const sendOTPThroughMail = (to, subject, text) => {
   // Thông tin tài khoản email gửi
@@ -44,7 +46,7 @@ const generateOTP = (): string => {
 
 const decodeBearerToken = async (
   bearerToken: string
-): Promise<{ userId: string, role: UserRole  }> => {
+): Promise<{ userId: string; role: UserRole; deviceId?: string }> => {
   const token = bearerToken?.split(" ")?.[1];
   const decodedInfo = await jsonwebToken.decode(token, { complete: true });
   const userInfo = decodedInfo?.payload as any;
@@ -53,4 +55,28 @@ const decodeBearerToken = async (
   }
 };
 
-export { sendOTPThroughMail, generateOTP, decodeBearerToken };
+const sendNoti = async (userDeviceId: string, body: NotiBody) => {
+  try {
+    console.log("USER DE", userDeviceId);
+    const response = await axios.post(
+      `https://fcm.googleapis.com/fcm/send`,
+      {
+        to: userDeviceId,
+        notification: body,
+      },
+      {
+        headers: {
+          Authorization: `key=${process.env.CLOUD_MESSAGE_SERVER_ID}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response?.data) {
+      console.log("RESPONSE IS", response?.data);
+    }
+  } catch (error) {
+    // console.log("SEND NOTI ERROR", error);
+  }
+};
+
+export { sendOTPThroughMail, generateOTP, decodeBearerToken, sendNoti };

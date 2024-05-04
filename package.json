@@ -13,6 +13,7 @@
   "author": "Kiet Huynh",
   "license": "MIT",
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/cors": "2.8.12",
     "@types/express": "4.17.13",
     "@types/express-session": "1.17.10",
@@ -28,6 +29,7 @@
     "@typegoose/typegoose": "8.0.1",
     "@types/uuid": "8.3.1",
     "argon2": "0.28.2",
+    "axios": "^1.6.8",
     "connect-mongo": "5.1.0",
     "cors": "^2.8.5",
     "dataloader": "2.0.0",

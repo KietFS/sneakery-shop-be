@@ -33,7 +33,8 @@ const getUsers = async (req: express.Request, res: GetListResponse<IUser>) => {
 //basic flow register user
 const registerUser = async (req: CreateUserRequest, res: ActionResponse) => {
   try {
-    const { phoneNumber, username, password, email, address } = req.body;
+    const { phoneNumber, username, password, email, address, deviceId } =
+      req.body;
     //Validate field
     if (!password || !email || !username) {
       return res.status(400).json({
@@ -62,6 +63,7 @@ const registerUser = async (req: CreateUserRequest, res: ActionResponse) => {
         address: address || "",
         isVerified: false,
         rewardPoints: 0,
+        deviceId: deviceId || "",
       });
       await newUser.save();
       const generatedOTP = generateOTP();
@@ -106,11 +108,12 @@ const loginUser = async (req: LoginUserRequest, res: ActionResponse) => {
         existedUser.password,
         password
       );
-      if (existedUser.isActive == false){
+      if (existedUser.isActive == false) {
         return res?.status(400).json({
           code: 400,
           success: false,
-          message: "Your account is deactivated, please contact admin for more information",
+          message:
+            "Your account is deactivated, please contact admin for more information",
         });
       }
       if (isValidPassword) {
@@ -119,6 +122,7 @@ const loginUser = async (req: LoginUserRequest, res: ActionResponse) => {
             userId: existedUser._id,
             email: existedUser.email,
             role: existedUser.role,
+            deviceId: existedUser?.deviceId || "",
           },
           `${process.env.ACCESS_TOKEN_SECRET}`,
           { expiresIn: "7d" } // Set the expiration time as needed
@@ -131,9 +135,11 @@ const loginUser = async (req: LoginUserRequest, res: ActionResponse) => {
             text: "Login successfully",
             info: {
               user: {
+                userId: existedUser?._id,
                 username: existedUser?.username,
                 email: existedUser?.email,
                 phoneNumber: existedUser?.phoneNumber,
+                rewardPoints: existedUser?.rewardPoints,
               },
               accessToken: accessToken,
             },
@@ -315,7 +321,10 @@ const loginAdmin = async (req: LoginUserRequest, res: ActionResponse) => {
 const activateUser = async (req: express.Request, res: ActionResponse) => {
   try {
     const { userId } = req.params;
-    const findedUser = await User.updateOne({ _id: userId }, { $set: { isActive: true }});;
+    const findedUser = await User.updateOne(
+      { _id: userId },
+      { $set: { isActive: true } }
+    );
 
     if (findedUser.ok) {
       return res.status(200).json({
@@ -337,12 +346,15 @@ const activateUser = async (req: express.Request, res: ActionResponse) => {
       code: 500,
     });
   }
-}
+};
 
 const deActivateUser = async (req: express.Request, res: ActionResponse) => {
   try {
     const { userId } = req.params;
-    const findedUser = await User.updateOne({ _id: userId }, { $set: { isActive: false }});;
+    const findedUser = await User.updateOne(
+      { _id: userId },
+      { $set: { isActive: false } }
+    );
 
     if (findedUser.ok) {
       return res.status(200).json({
@@ -364,10 +376,48 @@ const deActivateUser = async (req: express.Request, res: ActionResponse) => {
       code: 500,
     });
   }
+};
 
-}
+const getUserDetail = async (req: express.Request, res: ActionResponse) => {
+  try {
+    const { userId } = req.params;
+    const findedUser = await User.findOne({ _id: userId });
+    if (!!findedUser) {
+      return res.status(200).json({
+        success: true,
+        message: {
+          info: {
+            userId: findedUser?._id,
+            username: findedUser?.username,
+            email: findedUser?.email,
+            phoneNumber: findedUser?.phoneNumber,
+            rewardPoints: findedUser?.rewardPoints,
+          },
+        },
+        code: 200,
+      });
+    } else {
+      return res?.status(400).json({
+        success: false,
+        message: null,
+        code: 400,
+      });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error", code: 500 });
+  }
+};
 
-
-
-
-export { getUsers, registerUser, loginUser, verifyUserOTP, editUser , loginAdmin, activateUser, deActivateUser };
+export {
+  getUsers,
+  registerUser,
+  loginUser,
+  verifyUserOTP,
+  editUser,
+  loginAdmin,
+  activateUser,
+  deActivateUser,
+  getUserDetail,
+};

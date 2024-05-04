@@ -1,9 +1,15 @@
-import { ActionResponse, GetListResponse, GetOneResponse, RateProductPayload } from "../types";
+import {
+  ActionResponse,
+  GetListResponse,
+  GetOneResponse,
+  RateProductPayload,
+} from "../types";
 import { IProduct, Product } from "../entities/Product";
 import express, { IRoute } from "express";
 import { CreateProductPayload } from "../types";
 import { decodeBearerToken } from "../utils";
 import { User } from "../entities/User";
+import { Cart } from "../entities/Cart";
 
 //NEED TO UPDATE FILTER FOR SIZE
 const getProducts = async (
@@ -121,7 +127,6 @@ const updateSizes = async (
   }
 };
 
-
 const getProductDetail = async (
   req: express.Request,
   res: GetOneResponse<IProduct>
@@ -224,58 +229,96 @@ const commentProduct = async (
   }
 };
 
-const rateProduct = 
-async (
-  req: RateProductPayload,
-  res: ActionResponse
-) => {
-  const {productId} = req.params;
+const rateProduct = async (req: RateProductPayload, res: ActionResponse) => {
+  const { productId } = req.params;
   const rate = req.body.rate;
   try {
     const authorizationHeader = req.headers.authorization;
     const userInfo = await decodeBearerToken(authorizationHeader);
-    const currentProduct = await Product.findOne({_id: productId});
-    const currentUser = await User.findOne({_id: userInfo.userId});
+    const currentProduct = await Product.findOne({ _id: productId });
+    const currentUser = await User.findOne({ _id: userInfo.userId });
 
-    await Product.findOneAndUpdate({_id: productId}, {$set: {rate: Number((((currentProduct?.rate || 0) + rate)/2).toFixed(1)), totalRate: (currentProduct?.totalRate || 0) + 1}})
-    await User.updateOne({_id: userInfo.userId}, {$set: {rewardPoints: Number(((currentUser.rewardPoints || 0) + currentProduct.price / 20).toFixed(0)) }});
-    return res.status(200).json({code: 200, success: true, message: "Rate product success"});
+    await Product.findOneAndUpdate(
+      { _id: productId },
+      {
+        $set: {
+          rate: Number((((currentProduct?.rate || 0) + rate) / 2).toFixed(1)),
+          totalRate: (currentProduct?.totalRate || 0) + 1,
+        },
+      }
+    );
+    await User.updateOne(
+      { _id: userInfo.userId },
+      {
+        $set: {
+          rewardPoints: Number(
+            (
+              (currentUser.rewardPoints || 0) +
+              currentProduct.price / 20
+            ).toFixed(0)
+          ),
+        },
+      }
+    );
+    return res
+      .status(200)
+      .json({ code: 200, success: true, message: "Rate product success" });
   } catch (error) {
-    return res.status(500).json({code: 500, success: false, message: "Internal Server Error"});
+    return res
+      .status(500)
+      .json({ code: 500, success: false, message: "Internal Server Error" });
   }
-}
+};
 
 const removeProduct = async (req: express.Request, res: ActionResponse) => {
   const authorizationHeader = req?.headers?.authorization;
   const userInfo = await decodeBearerToken(authorizationHeader);
   if (userInfo?.role !== "admin") {
-    return res.status(403).json({ code: 403, success: false, message: "Permission Denied" });
-  } else {  try {
-    const { productId } = req.params;
-    await Product.deleteOne({ _id: productId });
-    return res.status(200).json({ code: 200, success: true, message: "Delete product success" });
-} catch (error) {
-    console.error(error);
-    return res.status(500).json({ code: 500, success: false, message: "Internal Server Error" });
-  }}
-
+    return res
+      .status(403)
+      .json({ code: 403, success: false, message: "Permission Denied" });
+  } else {
+    try {
+      const { productId } = req.params;
+      await Product.deleteOne({ _id: productId });
+      return res
+        .status(200)
+        .json({ code: 200, success: true, message: "Delete product success" });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ code: 500, success: false, message: "Internal Server Error" });
+    }
+  }
 };
 
-const removeManyProducts = async (req: express.Request, res: ActionResponse) => {
+const removeManyProducts = async (
+  req: express.Request,
+  res: ActionResponse
+) => {
   const authorizationHeader = req?.headers?.authorization;
   const userInfo = await decodeBearerToken(authorizationHeader);
-  const {productIds} = req.body as any
+  const { productIds } = req.body as any;
 
   if (userInfo?.role !== "admin") {
-    return res.status(403).json({ code: 403, success: false, message: "Permission Denied" });
-  } else {  try {
-    await Product.findByIdAndDelete({ _id: productIds });
-    return res.status(200).json({ code: 200, success: true, message: "Delete product success" });
-} catch (error) {
-    console.error(error);
-    return res.status(500).json({ code: 500, success: false, message: "Internal Server Error" });
-  }}
-}
+    return res
+      .status(403)
+      .json({ code: 403, success: false, message: "Permission Denied" });
+  } else {
+    try {
+      await Product.findByIdAndDelete({ _id: productIds });
+      return res
+        .status(200)
+        .json({ code: 200, success: true, message: "Delete product success" });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ code: 500, success: false, message: "Internal Server Error" });
+    }
+  }
+};
 
 export {
   getProducts,
@@ -283,7 +326,7 @@ export {
   getProductDetail,
   commentProduct,
   updateSizes,
-  rateProduct, 
+  rateProduct,
   removeProduct,
-  removeManyProducts
+  removeManyProducts,
 };

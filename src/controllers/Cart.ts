@@ -23,7 +23,9 @@ const getCarts = async (
     });
     const userInfo = decodedInfo?.payload as any;
     const totalRecords = await Cart.countDocuments();
-    let carts = await Cart.find({ userId: userInfo?.userId }).populate({
+    let carts = await Cart.find({
+      userId: userInfo?.userId,
+    }).populate({
       path: "productId", // Đảm bảo đây là tên trường trong Cart schema bạn muốn populate
       select: "name thumbnail", // Chỉ select trường price từ Product
     });
@@ -79,6 +81,7 @@ const createCart = async (req: CreateCartPayload, res: ActionResponse) => {
       userId: userInfo.userId,
       size: size,
       price: findedProduct?.price * quantity,
+      isVisible: true,
     });
 
     await cart.save();
@@ -124,7 +127,5 @@ const removeCartItem = async (req: express.Request, res: ActionResponse) => {
     });
   }
 };
-
-
 
 export { createCart, getCartDetail, getCarts, removeCartItem };

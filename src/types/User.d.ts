@@ -9,6 +9,7 @@ type CreateUserRequest = express.Request<
     password: string;
     phoneNumber?: string;
     address?: string;
+    deviceId?: string;
   }
 >;
 

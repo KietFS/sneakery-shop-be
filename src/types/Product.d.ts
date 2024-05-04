@@ -16,7 +16,7 @@ type CreateProductPayload = express.Request<
   }
 >;
 
-type RateProductPayload = express.Request<
+type RateOrderPayload = express.Request<
   any,
   any,
   {
