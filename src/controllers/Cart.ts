@@ -81,7 +81,6 @@ const createCart = async (req: CreateCartPayload, res: ActionResponse) => {
       userId: userInfo.userId,
       size: size,
       price: findedProduct?.price * quantity,
-      isVisible: true,
     });
 
     await cart.save();

@@ -32,6 +32,7 @@ const createOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
       items: [],
       status: "new",
       paymentType: "cod",
+      address: address,
       totalPrice: 0 - (rewardPoints || 0),
     });
 
@@ -39,7 +40,7 @@ const createOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
     for (const cartItemData of cartId) {
       const cartItem: ICart = await Cart.findById(cartItemData);
 
-      if (cartItem?.isVisible) {
+      if (cartItem) {
         newOrder.items.push(cartItem._id);
         newOrder.totalPrice += cartItem?.price;
       }
@@ -51,11 +52,7 @@ const createOrder = async (req: CreateOrderPayload, res: ActionResponse) => {
     }
     for (const cartItemId of cartId) {
       // await updateProductQuantity(req, res);
-      await Cart.findByIdAndUpdate(cartItemId, {
-        $set: {
-          isVisible: false,
-        },
-      });
+      await Cart.findByIdAndDelete(cartItemId);
     }
     return res
       .status(200)

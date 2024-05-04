@@ -7,7 +7,6 @@ export interface ICart extends Document {
   quantity: number;
   size: number;
   price: number;
-  isVisible?: boolean;
   // Add other fields as needed
 }
 
@@ -21,7 +20,6 @@ const cartSchema: Schema = new Schema({
   quantity: { type: Number, require: true, unique: false },
   size: { type: Number, require: true, unique: false },
   price: { type: Number, require: true, unique: false },
-  isVisible: { type: Boolean, require: false, default: true },
 });
 
 // Create the User model

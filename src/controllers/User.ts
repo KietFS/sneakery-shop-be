@@ -122,6 +122,7 @@ const loginUser = async (req: LoginUserRequest, res: ActionResponse) => {
             userId: existedUser._id,
             email: existedUser.email,
             role: existedUser.role,
+            address: existedUser?.address || "",
             deviceId: existedUser?.deviceId || "",
           },
           `${process.env.ACCESS_TOKEN_SECRET}`,
@@ -137,6 +138,7 @@ const loginUser = async (req: LoginUserRequest, res: ActionResponse) => {
               user: {
                 userId: existedUser?._id,
                 username: existedUser?.username,
+                address: existedUser?.address || "",
                 email: existedUser?.email,
                 phoneNumber: existedUser?.phoneNumber,
                 rewardPoints: existedUser?.rewardPoints,
@@ -220,12 +222,14 @@ const editUser = async (req: EditUserRequest, res: ActionResponse) => {
       _id: userInfo.userId,
     });
     if (!!existedUser) {
-      await User.updateOne(
-        { userId: userInfo.userId },
+      console.log("ADDDDDDRESS", req.body.address);
+      await User.findOneAndUpdate(
+        { _id: userInfo.userId },
         {
           $set: {
             username: req.body.username,
             phoneNumber: req.body.phoneNumber,
+            address: req.body.address,
           },
         }
       );
@@ -238,6 +242,8 @@ const editUser = async (req: EditUserRequest, res: ActionResponse) => {
             ...(existedUser as any)._doc,
             username: req.body.username,
             phoneNumber: req.body.phoneNumber,
+            address: req.body.address,
+            userId: existedUser?._id,
           },
           text: "Cập nhật thông tin người dùng thành công",
         },
@@ -390,6 +396,7 @@ const getUserDetail = async (req: express.Request, res: ActionResponse) => {
             userId: findedUser?._id,
             username: findedUser?.username,
             email: findedUser?.email,
+            address: findedUser?.address || "",
             phoneNumber: findedUser?.phoneNumber,
             rewardPoints: findedUser?.rewardPoints,
           },

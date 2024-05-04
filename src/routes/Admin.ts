@@ -3,23 +3,27 @@ import {
   getUsers,
   loginAdmin,
   activateUser,
-  deActivateUser
+  deActivateUser,
 } from "../controllers/User";
-import { changeStatusOrder, deleteOrder, getAllOrder } from "../controllers/Order";
-import { getProducts } from "../controllers/Product";
+import {
+  changeStatusOrder,
+  deleteOrder,
+  getAllOrder,
+} from "../controllers/Order";
+import { getProducts, removeProduct } from "../controllers/Product";
 import { validateIsAdmin } from "../middlewares";
 const router = express.Router();
 
 // define the Admin routes
 router.post("/login", loginAdmin);
-router.get('/orders',validateIsAdmin, getAllOrder)
-router.get('/users',validateIsAdmin , getUsers)
-router.put('/users/activate/:userId',validateIsAdmin , activateUser)
-router.put('/users/deactivate/:userId',validateIsAdmin , deActivateUser)
-router.get('/products', getProducts)
-router.delete('/products/:productId', validateIsAdmin, getProducts)
-router.put('/orders/:orderId',validateIsAdmin, changeStatusOrder)
-router.delete('/orders/:orderId',validateIsAdmin, deleteOrder)
-
+router.get("/orders", validateIsAdmin, getAllOrder);
+router.get("/users", validateIsAdmin, getUsers);
+router.put("/users/activate/:userId", validateIsAdmin, activateUser);
+router.put("/users/deactivate/:userId", validateIsAdmin, deActivateUser);
+router.get("/products", getProducts);
+router.get("/products/:productId", validateIsAdmin, getProducts);
+router.put("/orders/:orderId", validateIsAdmin, changeStatusOrder);
+router.delete("/orders/:orderId", validateIsAdmin, deleteOrder);
+router.delete("/products/:productId", validateIsAdmin, removeProduct);
 
 module.exports = router;
