@@ -281,7 +281,7 @@ const loginAdmin = async (req: LoginUserRequest, res: ActionResponse) => {
           {
             userId: existedUser._id,
             email: existedUser.email,
-            role: existedUser.role,
+            role: "admin",
           },
           `${process.env.ACCESS_TOKEN_SECRET}`,
           { expiresIn: "7d" } // Set the expiration time as needed

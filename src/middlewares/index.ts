@@ -1,5 +1,6 @@
 import express, { NextFunction } from "express";
 import { ActionResponse } from "../types";
+import { decodeBearerToken } from "../utils";
 
 // Middleware để validate trường yêu cầu
 
@@ -36,20 +37,23 @@ const validateFieldPayload = <T = any>(
   next();
 };
 
-const validateIsAdmin = <T = any>(
+const validateIsAdmin = async <T = any>(
   req: express.Request<{}, {}, any>,
   res: ActionResponse,
   next: NextFunction
 ) => {
   const authorizationHeader = req.headers.authorization;
-  if (!authorizationHeader) {
+  const userInfo = await decodeBearerToken(authorizationHeader);
+  console.log("usr info", req.headers.authorization );
+  if (userInfo?.role !== "admin") {
     return res.status(401).json({
       success: false,
       message: "Unauthorized",
       code: 401,
     });
+  } else {
+    next();
   }
-  next();
 };
 
 export { validateFieldPayload, validateIsAdmin };
