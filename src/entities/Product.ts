@@ -35,7 +35,7 @@ const productSchema: Schema = new Schema({
   images: { type: [String], required: false },
   brand: { type: String, require: false },
   sizes: { type: [sizeSchema], require: false }, // Use sizeSchema here
-  buyTime: { type: Number, require: false },
+  buyTime: { type: Number, require: false, default: 0 },
   rate: { type: Number, require: false },
   totalRate: { type: Number, require: false },
   totalComment: { type: Number, require: false },

@@ -10,7 +10,7 @@ import {
   deleteOrder,
   getAllOrder,
 } from "../controllers/Order";
-import { getProducts, removeProduct } from "../controllers/Product";
+import { getProducts, getTenMostPopularProducts, removeProduct } from "../controllers/Product";
 import { validateIsAdmin } from "../middlewares";
 const router = express.Router();
 
@@ -25,5 +25,6 @@ router.get("/products/:productId", validateIsAdmin, getProducts);
 router.put("/orders/:orderId", validateIsAdmin, changeStatusOrder);
 router.delete("/orders/:orderId", validateIsAdmin, deleteOrder);
 router.delete("/products/:productId", validateIsAdmin, removeProduct);
+router.get("/products/popular", getTenMostPopularProducts);
 
 module.exports = router;

@@ -179,8 +179,7 @@ const createProduct = async (
       .status(200)
       .json({ success: true, message: "Create product succces", code: 200 });
   } catch (error) {
-    console.log("Internal Create Product Error", error);
-    return res.status(200).json({
+    return res.status(500).json({
       success: false,
       message: "Internal Server Error",
       code: 500,
@@ -220,7 +219,6 @@ const commentProduct = async (
       .status(200)
       .json({ success: true, message: "Create product succces", code: 200 });
   } catch (error) {
-    console.log("Internal Create Product Error", error);
     return res.status(200).json({
       success: false,
       message: "Internal Server Error",
@@ -314,21 +312,27 @@ const removeManyProducts = async (
   }
 };
 
-const getTenMostPopularProducts = async (req: express.Request, res: GetListResponse<IProduct>) => {
+const getTenMostPopularProducts = async (
+  req: express.Request,
+  res: GetListResponse<IProduct>
+) => {
   try {
-    const products = await Product.find().sort({buyTime: -1}).limit(10);
-    if (!!products){
-      return res.status(200).json({code: 200, success: true, results: products, totalRecords: products.length});
-    } else {
-      return res.status(400).json({code: 400, success: true, results: [], totalRecords: 0});
-    }
-
+    const products = await Product.find({})
+      .sort({ buyTime: -1 })
+      .limit(10);
+    return res.status(200).json({
+      success: true,
+      results: products || [],
+      totalRecords: 100,
+      code: 200,
+    });
   } catch (error) {
-    return res.status(500).json({code: 500, success: false, results: [], totalRecords: 0});
+    console.error(error);
+    return res
+      .status(500)
+      .json({ code: 500, success: true, totalRecords: 0, results: [] });
   }
-
-
-}
+};
 
 export {
   getProducts,
