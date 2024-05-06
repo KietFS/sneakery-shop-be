@@ -2,7 +2,7 @@
 
 # Bắt đầu
 
->**Note**: Hãy đảm bảo nodejs version 18 đã được cài đặt sẵn trong máy.
+>**Note**: Hãy đảm bảo nodejs version 18 hoặc hơn đã được cài đặt sẵn trong máy.
 
 ## Step 1: 
 
