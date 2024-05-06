@@ -26,20 +26,25 @@ const sizeSchema = new Schema({
   quantity: { type: Number, required: true },
 });
 
-const productSchema: Schema = new Schema({
-  name: { type: String, required: true },
-  category: { type: String, required: true },
-  thumbnail: { type: String, required: true },
-  price: { type: Number, required: true },
-  description: { type: String, require: false },
-  images: { type: [String], required: false },
-  brand: { type: String, require: false },
-  sizes: { type: [sizeSchema], require: false }, // Use sizeSchema here
-  buyTime: { type: Number, require: false, default: 0 },
-  rate: { type: Number, require: false },
-  totalRate: { type: Number, require: false },
-  totalComment: { type: Number, require: false },
-});
+const productSchema: Schema = new Schema(
+  {
+    name: { type: String, required: true },
+    category: { type: String, required: true },
+    thumbnail: { type: String, required: true },
+    price: { type: Number, required: true },
+    description: { type: String, require: false },
+    images: { type: [String], required: false },
+    brand: { type: String, require: false },
+    sizes: { type: [sizeSchema], require: false }, // Use sizeSchema here
+    buyTime: { type: Number, require: false, default: 0 },
+    rate: { type: Number, require: false },
+    totalRate: { type: Number, require: false },
+    totalComment: { type: Number, require: false },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 // Create the Product model
 export const Product = mongoose.model<IProduct>("Product", productSchema);

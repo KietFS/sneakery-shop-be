@@ -40,6 +40,7 @@ const getProducts = async (
       (parseInt(page as string, 10) - 1) * parseInt(limit as string, 10);
     const totalRecords = await Product.countDocuments();
     const products = await Product.find(queryConditions)
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit as string, 10));
 
@@ -186,6 +187,36 @@ const createProduct = async (
     });
   }
 };
+const updateProduct = async (req: express.Request, res: ActionResponse) => {
+  const { productId } = req.params;
+  try {
+    const { name, category, price, description, brand, sizes } = req.body;
+
+    const product = await Product.findOneAndUpdate(
+      { _id: productId },
+      {
+        $set: {
+          name,
+          category,
+          price,
+          description,
+          brand,
+          sizes,
+        },
+      }
+    );
+    // await product.save();
+    return res
+      .status(200)
+      .json({ success: true, message: "Create product succces", code: 200 });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      code: 500,
+    });
+  }
+};
 
 const commentProduct = async (
   req: CreateProductPayload,
@@ -317,9 +348,7 @@ const getTenMostPopularProducts = async (
   res: GetListResponse<IProduct>
 ) => {
   try {
-    const products = await Product.find({})
-      .sort({ buyTime: -1 })
-      .limit(10);
+    const products = await Product.find({}).sort({ buyTime: -1 }).limit(10);
     return res.status(200).json({
       success: true,
       results: products || [],
@@ -343,5 +372,6 @@ export {
   rateProduct,
   removeProduct,
   removeManyProducts,
-  getTenMostPopularProducts
+  getTenMostPopularProducts,
+  updateProduct,
 };
