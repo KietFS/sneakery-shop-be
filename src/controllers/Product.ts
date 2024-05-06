@@ -314,6 +314,22 @@ const removeManyProducts = async (
   }
 };
 
+const getTenMostPopularProducts = async (req: express.Request, res: GetListResponse<IProduct>) => {
+  try {
+    const products = await Product.find().sort({buyTime: -1}).limit(10);
+    if (!!products){
+      return res.status(200).json({code: 200, success: true, results: products, totalRecords: products.length});
+    } else {
+      return res.status(400).json({code: 400, success: true, results: [], totalRecords: 0});
+    }
+
+  } catch (error) {
+    return res.status(500).json({code: 500, success: false, results: [], totalRecords: 0});
+  }
+
+
+}
+
 export {
   getProducts,
   createProduct,
@@ -323,4 +339,5 @@ export {
   rateProduct,
   removeProduct,
   removeManyProducts,
+  getTenMostPopularProducts
 };
