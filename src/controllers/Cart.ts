@@ -83,6 +83,10 @@ const createCart = async (req: CreateCartPayload, res: ActionResponse) => {
       price: findedProduct?.price * quantity,
     });
 
+    await findedProduct.updateOne({
+      $set: { buyTime: (findedProduct.buyTime || 0) + 1 },
+    });
+
     await cart.save();
     return res
       .status(200)
@@ -101,9 +105,15 @@ const removeCartItem = async (req: express.Request, res: ActionResponse) => {
   const { cartId } = req.params;
   const userInfo = await decodeBearerToken(req.headers.authorization);
   const cart = await Cart.findOne({ _id: cartId });
+  const finedProuct = await Product.findOne({ _id: cart.productId });
   if (!!cart && cart.userId == userInfo?.userId) {
     try {
       await Cart.remove({ _id: cartId as string });
+      await finedProuct.updateOne({
+        $set: {
+          buyTime: finedProuct.buyTime > 0 ? finedProuct.buyTime - 1 : 0,
+        },
+      });
       return res.status(200).json({
         success: true,
         message: "Xóa item khỏi giỏ hàng thành công",
