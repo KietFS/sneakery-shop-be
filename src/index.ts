@@ -1,6 +1,6 @@
 require("dotenv").config();
 import "reflect-metadata";
-import express, { text } from "express";
+import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 

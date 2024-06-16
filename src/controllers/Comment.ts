@@ -32,8 +32,7 @@ const createComment = async (
   res: ActionResponse
 ) => {
   try {
-    const authorizationHeader = req.headers.authorization;
-    const userInfo = await decodeBearerToken(authorizationHeader);
+    const userInfo = req.userInfo;
     const { content } = req.body;
     const { productId } = req.params;
 

@@ -4,32 +4,27 @@ import {
   GetOneResponse,
   ICartResponse,
 } from "../types";
-import express, { IRoute } from "express";
+import express from "express";
 import { Cart, ICart } from "../entities/Cart";
 import { CreateCartPayload } from "../types";
 import jsonwebToken from "jsonwebtoken";
 import { decodeBearerToken } from "../utils";
 import { Product } from "../entities/Product";
+import { AuthenticatedRequest } from "../types/Request";
 
 const getCarts = async (
-  req: express.Request,
+  req: AuthenticatedRequest,
   res: GetListResponse<ICartResponse>
 ) => {
   try {
-    const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader?.split(" ")?.[1];
-    const decodedInfo = await jsonwebToken.decode(token, {
-      complete: true,
-    });
-    const userInfo = decodedInfo?.payload as any;
+    const userInfo = req.userInfo;
     const totalRecords = await Cart.countDocuments();
     let carts = await Cart.find({
       userId: userInfo?.userId,
     }).populate({
-      path: "productId", // Đảm bảo đây là tên trường trong Cart schema bạn muốn populate
-      select: "name thumbnail", // Chỉ select trường price từ Product
+      path: "productId",
+      select: "name thumbnail",
     });
-    // Map qua mỗi cart và tính toán giá trị price mới
     return res.json({
       success: true,
       results: carts || [],

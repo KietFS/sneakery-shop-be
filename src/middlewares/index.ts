@@ -1,6 +1,10 @@
-import express, { NextFunction } from "express";
+import express, { NextFunction, Response } from "express";
 import { ActionResponse } from "../types";
 import { decodeBearerToken } from "../utils";
+
+export interface AuthenticatedRequest extends express.Request {
+  userInfo?: { userId: string };
+}
 
 const ensureAdmin = async <T = any>(
   req: express.Request<{}, {}, any>,
@@ -20,9 +24,9 @@ const ensureAdmin = async <T = any>(
   }
 };
 
-const ensureUser = async <T = any>(
-  req: express.Request,
-  res: ActionResponse,
+const ensureUser = async (
+  req: AuthenticatedRequest,
+  res: Response,
   next: NextFunction
 ) => {
   const authorizationHeader = req.headers.authorization;
@@ -34,8 +38,8 @@ const ensureUser = async <T = any>(
       code: 401,
     });
   } else {
-    // Lưu thông tin người dùng vào req.user để các middleware/handler tiếp theo có thể sử dụng
-    (req as any).userInfo = userInfo;
+    // Add userInfo to the req object
+    req.userInfo = userInfo;
     next();
   }
 };
