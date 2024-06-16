@@ -3,20 +3,20 @@ import {
   createProduct,
   getProductDetail,
   getProducts,
-  updateSizes,
   rateProduct,
-  getTenMostPopularProducts,
 } from "../controllers/Product";
-import { validateFieldPayload } from "../middlewares";
 const router = express.Router();
 
-// define the about route
+//get all the products
 router.get("/", getProducts);
 
+//create a new product
 router.post("/", createProduct);
-router.get("/:productId", getProductDetail);
-router.get("/updateSize", updateSizes);
-router.post('/rate/:productId', rateProduct)
 
+//get product detail
+router.get("/:productId", getProductDetail);
+
+//rate a product
+router.post("/rate/:productId", rateProduct);
 
 module.exports = router;

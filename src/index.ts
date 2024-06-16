@@ -3,7 +3,6 @@ import "reflect-metadata";
 import express, { text } from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import { sendNoti } from "./utils";
 
 const main = async () => {
   const app = express();
@@ -46,11 +45,6 @@ const main = async () => {
   //listen on port
   app.listen(PORT, () => {
     console.log(`Server started on localhost:${PORT}`);
-    // await sendNoti("", {
-    //   title: "HELLO WORLD 2222",
-    //   subtitle: "AAA",
-    //   body: "12131231231231",
-    // });
   });
 };
 

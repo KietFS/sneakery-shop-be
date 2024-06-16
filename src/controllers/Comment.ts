@@ -1,7 +1,6 @@
 import { ActionResponse, GetListResponse, GetOneResponse } from "../types";
 import express from "express";
 import { Comment, IComment } from "../entities/Comments";
-import jsonwebToken from "jsonwebtoken";
 import { decodeBearerToken } from "../utils";
 import { CreateCommentPayload } from "../types/Comment";
 import { Product } from "../entities/Product";
@@ -56,7 +55,9 @@ const createComment = async (
             ],
           },
         });
-        await findedProduct.update({$set: {totalComments: (findedProduct.totalComment) || 0 + 1}})
+        await findedProduct.update({
+          $set: { totalComments: findedProduct.totalComment || 0 + 1 },
+        });
         return res.status(200).json({
           success: true,
           message: "Comment success",
@@ -83,7 +84,7 @@ const createComment = async (
           ],
         });
         await newComment.save();
-        await findedProduct.update({$set: {totalComments: 1}})
+        await findedProduct.update({ $set: { totalComments: 1 } });
         return res.status(200).json({
           success: true,
           message: "Comment success",

@@ -58,76 +58,6 @@ const getProducts = async (
   }
 };
 
-const updateSizes = async (
-  req: express.Request,
-  res: GetListResponse<IProduct>
-) => {
-  try {
-    const templateSizes = [
-      {
-        size: 36,
-        quantity: 10,
-      },
-      {
-        size: 37,
-        quantity: 10,
-      },
-      {
-        size: 38,
-        quantity: 10,
-      },
-      {
-        size: 39,
-        quantity: 10,
-      },
-      {
-        size: 40,
-        quantity: 10,
-      },
-      {
-        size: 41,
-        quantity: 10,
-      },
-      {
-        size: 42,
-        quantity: 10,
-      },
-      {
-        size: 43,
-        quantity: 10,
-      },
-      {
-        size: 44,
-        quantity: 10,
-      },
-      {
-        size: 45,
-        quantity: 10,
-      },
-    ]; // Define your template sizes here
-    try {
-      await Product.updateMany({}, { $set: { sizes: templateSizes } });
-    } catch (error) {
-      console.log("UPDATE MANY ERROR", error);
-      return res
-        .status(500)
-        .json({ code: 500, success: false, results: [], totalRecords: 0 });
-    }
-
-    return res.status(200).json({
-      code: 200,
-      success: true,
-      totalRecords: 0,
-      results: [],
-    });
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ code: 500, success: false, results: [], totalRecords: 0 });
-  }
-};
-
 const getProductDetail = async (
   req: express.Request,
   res: GetOneResponse<IProduct>
@@ -368,7 +298,6 @@ export {
   createProduct,
   getProductDetail,
   commentProduct,
-  updateSizes,
   rateProduct,
   removeProduct,
   removeManyProducts,
