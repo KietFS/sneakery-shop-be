@@ -5,7 +5,7 @@ import {
   getCarts,
   removeCartItem,
 } from "../controllers/Cart";
-import { ensureUser } from "src/middlewares";
+import { ensureUser } from "../middlewares";
 const router = express.Router();
 
 // define the about route

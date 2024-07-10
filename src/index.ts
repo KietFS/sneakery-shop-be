@@ -7,8 +7,9 @@ import cors from "cors";
 const main = async () => {
   const app = express();
   //Session, cookies store
-  const mongoUrl = `mongodb+srv://${process.env.DB_USER_NAME_DEV}:${process.env.DB_PASSWORD_DEV}@cluster0.1ojo2c3.mongodb.net/?retryWrites=true&w=majority`;
+  const mongoUrl = `mongodb+srv://${process.env.DB_USER_NAME_DEV}:${process.env.DB_PASSWORD_DEV}@cluster0.1ojo2c3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
+  console.log("MOGO DB URL", mongoUrl);
   try {
     await mongoose.connect(mongoUrl, {
       useCreateIndex: true,
