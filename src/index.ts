@@ -22,7 +22,6 @@ const main = async () => {
   }
 
   //PORT
-  const PORT = process.env.PORT || 4000;
   app.use(cors());
   app.use(express.json());
 
@@ -44,11 +43,9 @@ const main = async () => {
   app.use("/favourite-products", favouriteProductRoutes);
 
   //listen on port
-  app.listen(PORT, () => {
-    console.log(`Server started on localhost:${PORT}`);
+  app.listen(process.env.PORT || 4000, () => {
+    console.log("Server started");
   });
-
-  app.get("/", () => "Hello World");
 };
 
 main().catch((error) => console.log("ERROR", error));
