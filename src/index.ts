@@ -47,6 +47,8 @@ const main = async () => {
   app.listen(PORT, () => {
     console.log(`Server started on localhost:${PORT}`);
   });
+
+  app.get("/", () => "Hello World");
 };
 
 main().catch((error) => console.log("ERROR", error));
