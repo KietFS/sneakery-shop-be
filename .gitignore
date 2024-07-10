@@ -3,3 +3,4 @@ dist
 .env
 .prettierrc.json
 .env
+package-lock.json
