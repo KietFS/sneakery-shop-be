@@ -23,6 +23,7 @@ const getUsers = async (req: express.Request, res: GetListResponse<IUser>) => {
       code: 200,
     });
   } catch (error) {
+    //Hello
     console.error(error);
     return res
       .status(500)
